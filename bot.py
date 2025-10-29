@@ -1,48 +1,30 @@
 import os
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, InputMediaPhoto
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 from dotenv import load_dotenv
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-# Load environment variables from .env
+# Load token from .env
 load_dotenv()
-
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-# Define your channel buttons
-CHANNELS = [
-    {
-        "name": "Official News",
-        "url": "https://t.me/officialnews",
-        "image": "https://example.com/news.jpg"
-    },
-    {
-        "name": "Patriot Voice",
-        "url": "https://t.me/patriotvoice",
-        "image": "https://example.com/voice.jpg"
-    },
-    {
-        "name": "Truth Central",
-        "url": "https://t.me/truthcentral",
-        "image": "https://example.com/truth.jpg"
-    }
-]
-
-WELCOME_TEXT = """
-👋 Welcome Patriot!
-
-Before you get access, please make sure to join the following channels 👇
-"""
-
+# Start command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [
-        [InlineKeyboardButton(channel["name"], url=channel["url"])]
-        for channel in CHANNELS
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    await update.message.reply_text("✅ Trump bot e aktiviran! Dobrodojde!")
 
-    await update.message.reply_text(WELCOME_TEXT, reply_markup=reply_markup)
+# Set message command
+async def set_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = ' '.join(context.args)
+    if message:
+        await update.message.reply_text(f"✅ Porakata e setirana: {message}")
+    else:
+        await update.message.reply_text("⚠️ Ve molime vnesete poraka: /set_message VashataPoraka")
 
+# Main app
 if __name__ == '__main__':
     app = ApplicationBuilder().token(BOT_TOKEN).build()
+
     app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("set_message", set_message))
+
+    print("🚀 Botot e startuvan...")
     app.run_polling()
